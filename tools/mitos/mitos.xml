@@ -1,0 +1,93 @@
+<tool id="mitos" name="MITOS" version="1.0.1">	
+  <description>de-novo annotation of metazoan mitochondrial genomes</description>
+  <requirements>
+    <requirement type="package" version="1.0.1">mitos</requirement>
+    <requirement type="package">zip</requirement>
+  </requirements>
+  <version_command>python usage: %prog [options] --version</version_command>
+  <command detect_errors="aggressive"><![CDATA[
+mkdir outdir && 
+
+runmitos.py 
+--input '$input'
+--code $code
+--outdir outdir
+--refdir /home/maze/workspace/mtdb/data/
+#if not "prot" in $advanced.featuretypes
+--noprot
+#end if
+#if not "trna" in $advanced.featuretypes
+--notrna
+#end if
+#if not "rrna" in $advanced.featuretypes
+--norrna
+#end if
+--finovl $advanced.finovl
+--evalue $advanced_prot.evalue
+--cutoff $advanced_prot.cutoff
+#set maxovl=float($advanced_prot.maxovl)/100.0
+--maxovl $maxovl
+--clipfac $advanced_prot.clipfac
+#set fragovl=float($advanced_prot.fragovl)/100.0
+--fragovl $fragovl
+--fragfac $advanced_prot.fragfac
+--ststrange $advanced_prot.ststrange
+
+#if "zip" in $outputs:
+    zip -9 -y -r output.zip output/"
+#end if
+
+]]></command>
+  <inputs>
+    <param argument="--input" label="Sequences" optional="false" type="data" format="fasta"/>
+    <param argument="--code" label="Genetic code" name="code" type="select">
+      <option value="2">Vertebrate</option>
+      <option value="4">Mold, Protozoan, Coelenteral</option>
+      <option value="5">Invertebrate</option>
+      <option value="9">Echinoderm, Flatworm</option>
+      <option value="13">Ascidian</option>
+      <option value="14">Alternative Flatworm</option>
+    </param>
+    <section name="advanced" title="Advanced options">
+      <param name="featuretypes" label="Feature types" help="Feature types that should be predicted by MITOS" type="select" multiple="true">
+        <option value="prot" selected="true">Proteins</option>
+        <option value="trna" selected="true">tRNAs</option>
+        <option value="rrna" selected="true">rRNAs</option>
+      </param>
+      <param argument="--finovl" label="Final overlap (nt)" help="Maximum number of nucleotides by which genes of different types may overlap" type="integer" value="35" min="0"/>
+    </section>
+    <section name="advanced_prot" title="Advanced options for protein coding gene prediction">
+      <param argument="--evalue" label="BLAST E-value Exponent" help="Negation of the exponent of the E-value threshold used by BLAST, i.e. a value X gives an E-value of 10^(-X)" type="float" value="2" min="0"/>
+      <param argument="--cutoff" label="Quality cutoff" help="Minimum allowed quality in % of the maximum quality value per reading frame" type="integer" value="50" min="0" max="100"/>
+      <param argument="--maxovl" label="Maximum overlap" help="Maximum allowed overlap of proteins in percent of the smaller feature " type="integer" value="20" min="0" max="100"/>
+      <param argument="--clipfac" label="Clipping factor" help="Clip overlapping proteins with the same name that differ by less than the specified factor" type="float" value="10" min="0"/>
+      <param argument="--fragovl" label="Fragment overlap" help="Maximum allowed overlap of proteins in the query (in percent of the shorter query range) for two hits to be counted as fragments of the same gene" type="integer" value="20" min="0" max="100"/>
+      <param argument="--fragfac" label="Fragment quality factor" help="Maximum factor by which fragments of the same protein may differ in their quality" type="float" value="10"/>
+      <param argument="--ststrange" label="Start/stop range" help="Number of aminoacids searched for start and stop codon of proteins" type="integer" value="6"/>
+    </section>
+    <param name="outputs" type="select" multiple="true" label="Additional outputs">
+	    <option value="mito">mito</mito>
+	    <option value="seq">SEQ</mito>
+	    <option value="raw">zipped raw results</mito>
+	    </param>
+  </inputs>
+  <outputs>
+    <data name="bedout" format="bed" from_work_dir="outdir/result.bed"/>
+    <data name="seqout" format="txt" from_work_dir="outdir/result.seq">
+	    <filter>"seq" in outputs</filter>
+    </data>
+    <data name="mitoout" format="tabular" from_work_dir="outdir/result">
+	    <filter>"mito" in outputs</filter>
+    </data>
+    <data name="rawout" format="zip" from_work_dir="outdir.zip">
+	    <filter>"raw" in outputs</filter>
+    </data>
+  </outputs>
+  <help><![CDATA[
+TODO: Write help
+  ]]></help>
+  <citations>
+    <citation type="doi">10.1016/j.ympev.2012.08.023</citation>
+  </citations>
+</tool>
+
