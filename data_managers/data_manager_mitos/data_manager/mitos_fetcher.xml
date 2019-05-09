@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<tool id="mitos_fetcher_data_manager" name="MITOS" tool_type="manage_data" version="0.0.1">
+    <description>reference data downloader</description>
+    <command detect_errors="exit_code">
+    <![CDATA[
+    python '$__tool_directory__/data_manager.py' 
+    --out '${out_file}'
+    --type '$type_cond.type_select'
+    --db '$type_cond.database'
+    ]]>
+    </command>
+    <inputs>
+        <conditional name="type_cond">
+            <param name="type_select" type="select" label="MITOS version">
+                <option value="mitos">MITOS</option>
+                <option value="mitos2">MITOS2</option>
+	    </param>
+            <when value="mitos">
+                <param name="database" type="select" label="Refernce data version">
+                    <option value="mitos1-refdata">RefSeq39 + MiTFi tRNA models</option>
+                </param>
+            </when>
+            <when value="mitos2">
+                <param name="database" type="select" label="Refernce data version">
+                    <option value="refseq39">RefSeq39 (equivalent to MITOS1 data)</option>
+                    <option value="refseq63m">RefSeq63 Metazoa</option>
+                    <option value="refseq63f">RefSeq63 Fungi</option>
+                    <option value="refseq63o">RefSeq63 Opisthokonta</option>
+                    <option value="refseq81m">RefSeq81 Metazoa</option>
+                    <option value="refseq81f">RefSeq81 Fungi</option>
+                    <option value="refseq81o">RefSeq81 Opisthokonta</option>
+                </param>
+            </when>
+        </conditional>
+    </inputs>
+    <outputs>
+        <data name="out_file" format="data_manager_json" />
+    </outputs>
+    <tests>
+        <test>
+            <conditional name="type_cond">
+                <param name="type_select" value="mitos"/>
+                <param name="database" value="mitos1-refdata"/>
+            </conditional>
+            <output name="out_file" file="mitos_refseq39.json"/>
+        </test>
+    </tests>
+    <help>
+TODO
+    </help>
+</tool>
+
