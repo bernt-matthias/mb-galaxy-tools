@@ -20,7 +20,7 @@ runmitos.py
 --input '$input'
 --code $code
 --outdir outdir
---refdir /home/maze/workspace/mtdb/data/
+--refdir '$refdir.fields.path'
 #if not "prot" in $advanced.featuretypes
 --noprot
 #end if
@@ -41,23 +41,28 @@ runmitos.py
 --fragfac $advanced_prot.fragfac
 --ststrange $advanced_prot.ststrange
 
-#if "zip" in $outputs:
-    zip -9 -y -r output.zip output/"
+#if "zip" in str($addoutputs):
+  zip -9 -y -r output.zip output/"
 #end if
-
-]]></command>
+  ]]></command>
   <inputs>
     <param argument="--input" label="Sequences" optional="false" type="data" format="fasta"/>
     <param argument="--code" label="Genetic code" name="code" type="select">
-      <option value="2">Vertebrate</option>
-      <option value="4">Mold, Protozoan, Coelenteral</option>
-      <option value="5">Invertebrate</option>
-      <option value="9">Echinoderm, Flatworm</option>
-      <option value="13">Ascidian</option>
-      <option value="14">Alternative Flatworm</option>
+      <option value="2">Vertebrate (2)</option>
+      <option value="4">Mold, Protozoan, Coelenteral (4)</option>
+      <option value="5">Invertebrate (5)</option>
+      <option value="9">Echinoderm, Flatworm (9)</option>
+      <option value="13">Ascidian (13)</option>
+      <option value="14">Alternative Flatworm (14)</option>
+    </param>
+    <param argument="--refdir" label="Reference data" type="select" help="contact the administrator of this Galaxy instance if you miss reference data">
+        <options from_data_table="mitos">
+          <filter type="static_value" value="mitos" column="2"/>
+        </options>
+        <validator message="No reference annotation is available for MITOS" type="no_options" />
     </param>
     <section name="advanced" title="Advanced options">
-      <param name="featuretypes" label="Feature types" help="Feature types that should be predicted by MITOS" type="select" multiple="true">
+      <param name="featuretypes" label="Feature types" help="Feature types that should be predicted by MITOS (--noprot,--notrna,--norrna)" type="select" multiple="true">
         <option value="prot" selected="true">Proteins</option>
         <option value="trna" selected="true">tRNAs</option>
         <option value="rrna" selected="true">rRNAs</option>
@@ -73,24 +78,79 @@ runmitos.py
       <param argument="--fragfac" label="Fragment quality factor" help="Maximum factor by which fragments of the same protein may differ in their quality" type="float" value="10"/>
       <param argument="--ststrange" label="Start/stop range" help="Number of aminoacids searched for start and stop codon of proteins" type="integer" value="6"/>
     </section>
-    <param name="outputs" type="select" multiple="true" label="Additional outputs">
-	    <option value="mito">mito</mito>
-	    <option value="seq">SEQ</mito>
-	    <option value="raw">zipped raw results</mito>
-	    </param>
+    <param name="addoutputs" type="select" multiple="true" label="Additional outputs">
+      <option value="mito" selected="false">mito</option>
+      <option value="seq" selected="false">SEQ</option>
+      <option value="raw" selected="false">zipped raw results</option>
+    </param>
+<!--GFF file-->
+<!--TBL file-->
+<!--Gene Order file-->
+<!--FAS file-->
+<!--FAA file-->
+<!---->
+<!--Raw data:-->
+<!--protein plot-->
+<!--ncRNA plot-->
+<!--raw data-->
   </inputs>
   <outputs>
     <data name="bedout" format="bed" from_work_dir="outdir/result.bed"/>
-    <data name="seqout" format="txt" from_work_dir="outdir/result.seq">
-	    <filter>"seq" in outputs</filter>
+    <data name="seqout" format="txt" from_work_dir="outdir/result.seq" label="${tool.name} on ${on_string}: TBL">
+      <filter>"seq" in str(addoutputs)</filter>
     </data>
-    <data name="mitoout" format="tabular" from_work_dir="outdir/result">
-	    <filter>"mito" in outputs</filter>
+    <data name="mitoout" format="tabular" from_work_dir="outdir/result" label="${tool.name} on ${on_string}: mito">
+      <filter>"mito" in str(addoutputs)</filter>
     </data>
-    <data name="rawout" format="zip" from_work_dir="outdir.zip">
-	    <filter>"raw" in outputs</filter>
+    <data name="rawout" format="zip" from_work_dir="outdir.zip" label="${tool.name} on ${on_string}: raw data">
+      <filter>"raw" in str(addoutputs)</filter>
     </data>
   </outputs>
+  <tests>
+    <test expect_num_outputs="1">
+      <param name="input" value="NC_012920.fas"/>
+      <param name="code" value="2"/>
+      <param name="refdir" value="mitos1-refdata" />
+      <output name="bedout" file="NC_012920.bed" ftype="bed"/>
+      <assert_command>
+        <has_text text="--code 2"/>
+      </assert_command>
+    </test>
+    <test expect_num_outputs="1">
+      <param name="input" value="NC_012920.fas"/>
+      <param name="code" value="2"/>
+      <param name="refdir" value="mitos1-refdata" />
+      <param name="advanced|featuretypes" value="prot,trna" />
+      <param name="advanced|finovl" value="50" />
+      <output name="bedout" file="NC_012920.bed" ftype="bed" compare="sim_size"/>
+      <assert_command>
+        <has_text text="--norrna"/>
+        <has_text text="--finovl 50"/>
+      </assert_command>
+    </test>
+    <test expect_num_outputs="1">
+      <param name="input" value="NC_012920.fas"/>
+      <param name="code" value="2"/>
+      <param name="refdir" value="mitos1-refdata" />
+      <param name="advanced_prot|evalue" value="3"/>
+      <param name="advanced_prot|cutoff" value="40"/>
+      <param name="advanced_prot|maxovl" value="30"/>
+      <param name="advanced_prot|clipfac" value="5"/>
+      <param name="advanced_prot|fragovl" value="15"/>
+      <param name="advanced_prot|fragfac" value="11"/>
+      <param name="advanced_prot|ststrange" value="12"/>
+      <output name="bedout" file="NC_012920.bed" ftype="bed" compare="sim_size"/>
+      <assert_command>
+        <has_text text="--evalue 3"/>
+        <has_text text="--cutoff 50"/>
+        <has_text text="--maxovl 0.3"/>
+        <has_text text="--clipfac 5.0"/>
+        <has_text text="--fragovl 0.15"/>
+        <has_text text="--fragfac 11.0"/>
+        <has_text text="--ststrange 12"/>
+      </assert_command>
+    </test>
+  </tests>
   <help><![CDATA[
 TODO: Write help
   ]]></help>

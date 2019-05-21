@@ -1,0 +1,2 @@
+mitos1-refdata	RefSeq39 + MiTFi tRNA models	mitos	${__HERE__}/mitos1-refdata/
+mitos2-refdata	wrong	mitos2	${__HERE__}/mitos1-refdata/
