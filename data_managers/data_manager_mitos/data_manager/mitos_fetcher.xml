@@ -14,14 +14,14 @@
             <param name="type_select" type="select" label="MITOS version">
                 <option value="mitos">MITOS</option>
                 <option value="mitos2">MITOS2</option>
-	    </param>
+            </param>
             <when value="mitos">
-                <param name="database" type="select" label="Refernce data version">
+                <param name="database" type="select" label="Reference data version">
                     <option value="mitos1-refdata">RefSeq39 + MiTFi tRNA models</option>
                 </param>
             </when>
             <when value="mitos2">
-                <param name="database" type="select" label="Refernce data version">
+                <param name="database" type="select" label="Reference data version">
                     <option value="refseq39">RefSeq39 (equivalent to MITOS1 data)</option>
                     <option value="refseq63m">RefSeq63 Metazoa</option>
                     <option value="refseq63f">RefSeq63 Fungi</option>
@@ -46,7 +46,34 @@
         </test>
     </tests>
     <help>
-TODO
+This data manager downloads MITOS and MITOS2 reference data for use in Galaxy.
+
+For MITOS the reference data includes 
+
+- protein data bases derived from RefSeq release 39 (see Bernt et al. 2012)
+- covariance models for tRNAs and rRNAs as described in Jühling et al 2012
+
+For MITOS2 the reference data sets are available for three different taxons
+
+- Metazoa
+- Fungi
+- Opisthokonta
+
+these have been computed for RefSeq release 63 and 81. In addition the reference data 
+for MITOS1 has been converted to be usable in MITOS2.
+contains
+
+The reference data sets contain: 
+
+- protein data bases derived from the corresponding RefSeq release Donath et al. 2019
+- covariance models computed for the data in the RefSeq releas based on the MITOS1 models 
+- in addition for Metazoa Release 63 also hidden markov models are available as described in Al Arab et al. 2017
     </help>
+    <citations>
+        <citation type="doi">10.1016/j.ympev.2012.08.023</citation>
+        <citation type="doi">10.1093/nar/gkr1131</citation>
+        <citation type="doi">10.1016/j.ympev.2016.09.024</citation>
+        <citation type="doi">10.1093/nar/gkz833</citation>
+    </citations>
 </tool>
 
