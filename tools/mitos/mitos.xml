@@ -1,13 +1,6 @@
 <tool id="mitos" name="MITOS" version="1.0.2">	
   <description>de-novo annotation of metazoan mitochondrial genomes</description>
   <!--Gene structure, regions which make an RNA product and features such as promoters, coding regions, gene fusion, splice sites etc.-->
-  <edam_topics>
-      <edam_topic>topic_0114</edam_topic>
-  </edam_topics>
-  <!--Annotate a genome sequence with terms from a controlled vocabulary-->
-  <edam_operations>
-      <edam_operation>operation_0362</edam_operation>
-  </edam_operations>
   <requirements>
     <requirement type="package" version="1.0.2">mitos</requirement>
     <requirement type="package">zip</requirement>
@@ -202,7 +195,7 @@ runmitos.py
       <output name="seqout" file="NC_012920.seq" ftype="txt" />
       <output name="mitoout" file="NC_012920.mito" ftype="tabular" />
       <output name="rawout" file="NC_012920.zip" ftype="zip" compare="sim_size" />
-      <output name="geneorder_out" file="NC_012920.geneorder" ftype="fasta" />
+      <output name="geneorderout" file="NC_012920.geneorder" ftype="fasta" />
       <assert_command>
         <has_text text="--code 5"/>
         <has_text text="--evalue 3"/>
