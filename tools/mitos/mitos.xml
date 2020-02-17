@@ -1,8 +1,8 @@
-<tool id="mitos" name="MITOS" version="1.0.4">	
+<tool id="mitos" name="MITOS" version="1.0.5">	
   <description>de-novo annotation of metazoan mitochondrial genomes</description>
   <!--Gene structure, regions which make an RNA product and features such as promoters, coding regions, gene fusion, splice sites etc.-->
   <requirements>
-    <requirement type="package" version="1.0.4">mitos</requirement>
+    <requirement type="package" version="1.0.5">mitos</requirement>
     <requirement type="package">zip</requirement>
   </requirements>
   <version_command>python -c "import mitos; print(mitos.__version__)"</version_command>
