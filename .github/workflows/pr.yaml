@@ -305,6 +305,10 @@ jobs:
           singularity pull --dir /tmp docker://continuumio/anaconda3
           singularity pull --dir /tmp docker://rocker/tidyverse
         fi
+    # Start OMERO
+    - name: Start OMERO
+      run: |
+        docker-compose -f .github/omero-docker-compose.yml up -d
 
     - name: Planemo test
       uses: galaxyproject/planemo-ci-action@v1
@@ -314,6 +318,7 @@ jobs:
         repository-list: ${{ needs.setup.outputs.repository-list }}
         galaxy-fork: ${{ env.GALAXY_FORK }}
         galaxy-branch: ${{ env.GALAXY_BRANCH }}
+        additional-planemo-options: --docker_run_extra_arguments '--add-host=host.docker.internal:host-gateway'
         chunk: ${{ matrix.chunk }}
         chunk-count: ${{ needs.setup.outputs.chunk-count }}
         galaxy-slots: ${{ steps.cpu-cores.outputs.count }}
